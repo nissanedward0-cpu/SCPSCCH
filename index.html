@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow — Worker Task Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <section id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="logo">T</div>
+        <div><h1>TaskFlow</h1><p>Worker Task Manager</p></div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-auth="login">Login</button>
+        <button class="tab" data-auth="register">Create account</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>Email<input id="loginEmail" type="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="loginPassword" type="password" required placeholder="••••••••"></label>
+        <button class="primary full" type="submit">Login</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <label>Full name<input id="regName" required placeholder="Your name"></label>
+        <label>Email<input id="regEmail" type="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="regPassword" type="password" minlength="6" required placeholder="At least 6 characters"></label>
+        <label>Role
+          <select id="regRole">
+            <option value="worker">Worker</option>
+            <option value="manager">Manager</option>
+          </select>
+        </label>
+        <button class="primary full" type="submit">Create account</button>
+      </form>
+
+      <div class="demo-box">
+        <strong>Demo accounts</strong>
+        <p>Manager: manager@demo.com / 123456</p>
+        <p>Worker: worker@demo.com / 123456</p>
+        <small>This demo stores data in your browser. For a real multi-device website, connect a backend/database.</small>
+      </div>
+    </div>
+  </section>
+
+  <section id="appScreen" class="app hidden">
+    <aside class="sidebar">
+      <div class="side-brand"><div class="logo">T</div><span>TaskFlow</span></div>
+      <nav>
+        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+        <button class="nav-btn" data-view="tasks">Tasks</button>
+        <button class="nav-btn manager-only" data-view="create">Create Task</button>
+        <button class="nav-btn" data-view="team">Team</button>
+      </nav>
+      <button id="logoutBtn" class="logout">Log out</button>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">WORKSPACE</p>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
+        <div class="profile">
+          <div id="avatar" class="avatar">A</div>
+          <div><strong id="userName">User</strong><small id="userRole">Worker</small></div>
+        </div>
+      </header>
+
+      <section id="dashboardView" class="view">
+        <div class="welcome">
+          <div><p class="eyebrow">WELCOME BACK</p><h1 id="welcomeText">Here’s your work overview.</h1></div>
+          <button class="primary manager-only" id="dashboardCreateBtn">+ New task</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><span>Total tasks</span><strong id="statTotal">0</strong></div>
+          <div class="stat"><span>Pending</span><strong id="statPending">0</strong></div>
+          <div class="stat"><span>In progress</span><strong id="statProgress">0</strong></div>
+          <div class="stat"><span>Completed</span><strong id="statCompleted">0</strong></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Recent tasks</h3><button class="link-btn" data-view-link="tasks">View all</button></div>
+          <div id="recentTasks" class="task-list"></div>
+        </div>
+      </section>
+
+      <section id="tasksView" class="view hidden">
+        <div class="section-head"><div><p class="eyebrow">WORK</p><h1>Tasks</h1></div><select id="statusFilter"><option value="all">All statuses</option><option value="pending">Pending</option><option value="in-progress">In progress</option><option value="completed">Completed</option></select></div>
+        <div id="allTasks" class="task-list"></div>
+      </section>
+
+      <section id="createView" class="view hidden manager-only">
+        <div class="section-head"><div><p class="eyebrow">MANAGEMENT</p><h1>Create a task</h1></div></div>
+        <form id="taskForm" class="panel task-form">
+          <label>Task title<input id="taskTitle" required placeholder="e.g. Design the homepage banner"></label>
+          <label>Description<textarea id="taskDescription" rows="5" required placeholder="Explain what needs to be done..."></textarea></label>
+          <div class="form-grid">
+            <label>Assign to<select id="taskAssignee" required></select></label>
+            <label>Due date<input id="taskDue" type="date" required></label>
+          </div>
+          <button class="primary" type="submit">Create task</button>
+        </form>
+      </section>
+
+      <section id="teamView" class="view hidden">
+        <div class="section-head"><div><p class="eyebrow">PEOPLE</p><h1>Team</h1></div></div>
+        <div id="teamList" class="team-grid"></div>
+      </section>
+
+      <div id="taskModal" class="modal hidden">
+        <div class="modal-card">
+          <button class="close" id="closeModal">×</button>
+          <p class="eyebrow">TASK DETAILS</p>
+          <h2 id="modalTitle"></h2>
+          <p id="modalDescription" class="description"></p>
+          <div class="meta-grid">
+            <div><span>Assigned to</span><strong id="modalAssignee"></strong></div>
+            <div><span>Due</span><strong id="modalDue"></strong></div>
+            <div><span>Status</span><strong id="modalStatus"></strong></div>
+          </div>
+          <div class="reply-area">
+            <label>Reply / progress update<textarea id="replyText" rows="4" placeholder="Write an update for the manager..."></textarea></label>
+            <div id="replyHistory" class="reply-history"></div>
+          </div>
+          <div class="modal-actions">
+            <button id="saveReply" class="secondary">Send reply</button>
+            <button id="statusAction" class="primary">Update status</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
